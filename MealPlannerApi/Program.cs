@@ -1,3 +1,6 @@
+using MealPlannerApi.Models;
+using Microsoft.EntityFrameworkCore;
+
 namespace MealPlannerApi
 {
     public class Program
@@ -13,6 +16,9 @@ namespace MealPlannerApi
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
+            // Configure the database connection
+            builder.Services.AddDbContext<MealContext>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -25,7 +31,6 @@ namespace MealPlannerApi
             app.UseHttpsRedirection();
 
             app.UseAuthorization();
-
 
             app.MapControllers();
 

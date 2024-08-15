@@ -1,4 +1,4 @@
-using MealPlannerApi.Models;
+using MealPlannerApi.Data;
 using Microsoft.EntityFrameworkCore;
 
 namespace MealPlannerApi
@@ -17,7 +17,7 @@ namespace MealPlannerApi
             builder.Services.AddSwaggerGen();
 
             // Configure the database connection
-            builder.Services.AddDbContext<MealContext>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+            builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
             var app = builder.Build();
 

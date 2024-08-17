@@ -16,6 +16,7 @@ namespace MealPlannerApi
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+            // Adds the new MealService for business logic for Meals
             builder.Services.AddScoped<MealService>();
 
             // Configure the database connection

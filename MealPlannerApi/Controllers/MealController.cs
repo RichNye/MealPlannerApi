@@ -32,7 +32,7 @@ namespace MealPlannerApi.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public ActionResult<Meal> GetById(Guid id)
+        public ActionResult<Meal> GetById(int id)
         {
             try
             {

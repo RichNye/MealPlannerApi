@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MealPlannerApi.Data;
 using MealPlannerApi.Services;
+using MealPlannerApi.Models.DTOs;
 
 namespace MealPlannerApi.Controllers
 {
@@ -56,28 +57,37 @@ namespace MealPlannerApi.Controllers
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Add([FromBody] Meal meal)
+        public async Task<IActionResult> Add([FromBody] MealBasicDTO mealDTO)
         {
+
+            // instantiate a new meal object to populate with the DTO fields
+            Meal meal = new Meal();
+
+            // check the provided mealDTO matches validation in the model. Return 400 if it doesn't.
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            if(meal.CreatedDate == default(DateTime))
+            // model must be valid if we've hit this point. Populate the full meal object.
+            meal.CreatedDate = DateTime.UtcNow;
+            meal.Name = mealDTO.Name;
+            if(mealDTO.Description != null)
             {
-                meal.CreatedDate = DateTime.UtcNow;
-            }
+                meal.Description = mealDTO.Description;
+            }           
 
             try
             {
+                // add the meal and sync changes with the actual DB.
                 _context.Meals.Add(meal);
                 await _context.SaveChangesAsync();
                 return CreatedAtAction(nameof(GetById), new { id = meal.Id }, meal);
             }
             catch (Exception ex)
             {
-                // Optionally log the error
-                return StatusCode(StatusCodes.Status500InternalServerError, $"An error occurred while saving the meal. {ex}");
+                // log the error. Strip the exception out if production.
+                return StatusCode(StatusCodes.Status500InternalServerError, $"An error occurred while saving the meal: {ex}");
             }
         }
     }

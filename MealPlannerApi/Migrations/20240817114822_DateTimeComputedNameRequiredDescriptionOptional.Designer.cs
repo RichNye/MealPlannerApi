@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace MealPlannerApi.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240805205454_NewDescriptionColumn")]
-    partial class NewDescriptionColumn
+    [Migration("20240817114822_DateTimeComputedNameRequiredDescriptionOptional")]
+    partial class DateTimeComputedNameRequiredDescriptionOptional
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -27,15 +27,17 @@ namespace MealPlannerApi.Migrations
 
             modelBuilder.Entity("MealPlannerApi.Models.Meal", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreatedDate")
+                        .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("Name")

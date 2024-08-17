@@ -1,4 +1,5 @@
 using MealPlannerApi.Data;
+using MealPlannerApi.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace MealPlannerApi
@@ -15,6 +16,7 @@ namespace MealPlannerApi
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+            builder.Services.AddScoped<MealService>();
 
             // Configure the database connection
             builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));

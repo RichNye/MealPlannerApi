@@ -1,9 +1,10 @@
 ﻿using MealPlannerApi.Data;
 using MealPlannerApi.Models;
+using MealPlannerApi.Services.Interfaces;
 
 namespace MealPlannerApi.Services
 {
-    public class MealService
+    public class MealService : IMealService
     {
         private readonly ApplicationDbContext _context;
 

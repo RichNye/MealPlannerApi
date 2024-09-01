@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MealPlannerApi.Data;
-using MealPlannerApi.Services;
+using MealPlannerApi.Services.Interfaces;
 using MealPlannerApi.Models.DTOs;
 
 namespace MealPlannerApi.Controllers
@@ -12,10 +12,10 @@ namespace MealPlannerApi.Controllers
     public class MealController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
-        private readonly MealService _mealService;
+        private readonly IMealService _mealService;
 
 
-        public MealController(ApplicationDbContext context, MealService mealService)
+        public MealController(ApplicationDbContext context, IMealService mealService)
         {
             _context = context;
             _mealService = mealService;

@@ -7,7 +7,5 @@ namespace MealPlannerApi.Data
     {
         public DbSet<Meal> Meals { get; set; }
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
-
-
     }
 }

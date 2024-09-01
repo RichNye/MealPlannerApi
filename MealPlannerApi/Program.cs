@@ -1,5 +1,6 @@
 using MealPlannerApi.Data;
 using MealPlannerApi.Services;
+using MealPlannerApi.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace MealPlannerApi
@@ -17,11 +18,25 @@ namespace MealPlannerApi
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
             // Adds the new MealService for business logic for Meals
-            builder.Services.AddScoped<MealService>();
+            builder.Services.AddScoped<IMealService, MealService>();
 
             // Configure the database connection
-            builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
-
+            
+            if(builder.Environment.IsDevelopment())
+            {
+                string? environmentDB = Environment.GetEnvironmentVariable("MEALPLANNER_DB");
+                switch(environmentDB)
+                {
+                    case "SQLServer":
+                        builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("SqlServerConnection")));
+                        break;
+                    case "Postgres":
+                        builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+                        break;
+                    case null:
+                        throw new Exception("MEALPLANNER_DB environment variable not set.");
+                }
+            }
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.

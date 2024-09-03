@@ -7,25 +7,25 @@ using MealPlannerApi.Models.DTOs;
 
 namespace MealPlannerApi.Controllers
 {
-    [Route("api/meals")]
+    [Route("api/recipes")]
     [ApiController]
-    public class MealController : ControllerBase
+    public class RecipeController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
-        private readonly IMealService _mealService;
+        private readonly IRecipeService _recipeService;
 
 
-        public MealController(ApplicationDbContext context, IMealService mealService)
+        public RecipeController(ApplicationDbContext context, IRecipeService recipeService)
         {
             _context = context;
-            _mealService = mealService;
+            _recipeService = recipeService;
         }
 
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public ActionResult<Meal> Get()
+        public ActionResult<Recipe> Get()
         {
-            List<Meal> meals = _mealService.GetRandomMeals(7);
+            List<Recipe> meals = _recipeService.GetRandomRecipes(7);
             return Ok(meals);
         }
 
@@ -33,19 +33,19 @@ namespace MealPlannerApi.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public ActionResult<Meal> GetById(int id)
+        public ActionResult<Recipe> GetById(int id)
         {
             try
             {
-                Meal? meal = _context.Meals.Find(id);
+                Recipe? recipe = _context.Recipes.Find(id);
 
-                if (meal == null)
+                if (recipe == null)
                 {
                     return NotFound();
                 }
                 else
                 {
-                    return Ok(meal);
+                    return Ok(recipe);
                 }
             }
             catch (Exception ex)
@@ -57,11 +57,11 @@ namespace MealPlannerApi.Controllers
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Add([FromBody] MealBasicDTO mealDTO)
+        public async Task<IActionResult> Add([FromBody] RecipeBasicDTO mealDTO)
         {
 
             // instantiate a new meal object to populate with the DTO fields
-            Meal meal = new Meal();
+            Recipe recipe = new Recipe();
 
             // check the provided mealDTO matches validation in the model. Return 400 if it doesn't.
             if (!ModelState.IsValid)
@@ -70,19 +70,19 @@ namespace MealPlannerApi.Controllers
             }
 
             // model must be valid if we've hit this point. Populate the full meal object.
-            meal.CreatedDate = DateTime.UtcNow;
-            meal.Name = mealDTO.Name;
+            recipe.CreatedDate = DateTime.UtcNow;
+            recipe.Name = mealDTO.Name;
             if (mealDTO.Description != null)
             {
-                meal.Description = mealDTO.Description;
+                recipe.Description = mealDTO.Description;
             }
 
             try
             {
                 // add the meal and sync changes with the actual DB.
-                _context.Meals.Add(meal);
+                _context.Recipes.Add(recipe);
                 await _context.SaveChangesAsync();
-                return CreatedAtAction(nameof(GetById), new { id = meal.Id }, meal);
+                return CreatedAtAction(nameof(GetById), new { id = recipe.Id }, recipe);
             }
             catch (Exception ex)
             {
@@ -96,12 +96,12 @@ namespace MealPlannerApi.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Delete(int id)
         {
-            Meal? meal = _context.Meals.Find(id);
+            Recipe? meal = _context.Recipes.Find(id);
             if (meal != null)
             {
                 try
                 {
-                    _context.Meals.Remove(meal);
+                    _context.Recipes.Remove(meal);
                     await _context.SaveChangesAsync();
                     return Ok("meal deleted successfully.");
                 }
@@ -122,7 +122,7 @@ namespace MealPlannerApi.Controllers
         {
             try
             {
-                List<Meal> meals = _context.Meals.ToList();
+                List<Recipe> meals = _context.Recipes.ToList();
                 foreach(var meal in meals)
                 {
                     _context.Remove(meal);

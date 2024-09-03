@@ -1,6 +1,6 @@
 ﻿namespace MealPlannerApi.Models.DTOs
 {
-    public class MealBasicDTO
+    public class RecipeBasicDTO
     {
         public String Name { get; set; }
 

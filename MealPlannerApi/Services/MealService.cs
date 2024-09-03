@@ -4,7 +4,7 @@ using MealPlannerApi.Services.Interfaces;
 
 namespace MealPlannerApi.Services
 {
-    public class MealService : IMealService
+    public class MealService : IRecipeService
     {
         private readonly ApplicationDbContext _context;
 
@@ -13,11 +13,11 @@ namespace MealPlannerApi.Services
             _context = context;
         }
 
-        public List<Meal> GetRandomMeals(int numberOfMeals)
+        public List<Recipe> GetRandomRecipes(int numberOfRecipes)
         {
-            List<Meal> userMeals = _context.Meals.OrderBy(m => Guid.NewGuid()).Take(numberOfMeals).ToList<Meal>();
+            List<Recipe> userRecipes = _context.Recipes.OrderBy(m => Guid.NewGuid()).Take(numberOfRecipes).ToList<Recipe>();
 
-            return userMeals;
+            return userRecipes;
         }
     }
 }

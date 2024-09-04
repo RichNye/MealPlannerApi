@@ -16,6 +16,9 @@ namespace MealPlannerApi.Models
         [ForeignKey("Recipe")]
         public int RecipeId { get; set; }
 
+        [Required]
+        public string MealName { get; set; }
+
         public Recipe Recipe { get; set; }
 
         [ForeignKey("MealPlan")]

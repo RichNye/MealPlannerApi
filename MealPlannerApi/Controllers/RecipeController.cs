@@ -1,11 +1,10 @@
 ﻿using MealPlannerApi.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MealPlannerApi.Data;
 using MealPlannerApi.Services.Interfaces;
 using MealPlannerApi.Models.DTOs;
 
-namespace MealPlannerApi.Controllers
+namespace RecipePlannerApi.Controllers
 {
     [Route("api/recipes")]
     [ApiController]
@@ -23,21 +22,60 @@ namespace MealPlannerApi.Controllers
 
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public ActionResult<Recipe> Get()
+        public async Task<IActionResult> Get()
         {
-            List<Recipe> meals = _recipeService.GetRandomRecipes(7);
-            return Ok(meals);
+            List<Recipe> Recipes = _recipeService.GetRandomRecipes(7);
+            return Ok(Recipes);
+        }
+
+        [HttpPatch("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> Update(int id, [FromBody]RecipeBasicDTO recipeBasic)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                Recipe recipe = await _context.Recipes.FindAsync(id);
+                if (recipe == null)
+                {
+                    return NotFound();
+                }
+                
+                recipe.Description = recipeBasic.Description;
+                recipe.Name = recipeBasic.Name;
+
+                int result = await _context.SaveChangesAsync();
+
+                if (result == 0)
+                {
+                    return BadRequest("No changes made");
+                }
+                else
+                {
+                    return Ok(recipe);
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public ActionResult<Recipe> GetById(int id)
+        public async Task<IActionResult> GetById(int id)
         {
             try
             {
-                Recipe? recipe = _context.Recipes.Find(id);
+                Recipe? recipe = await _context.Recipes.FindAsync(id);
 
                 if (recipe == null)
                 {
@@ -57,29 +95,29 @@ namespace MealPlannerApi.Controllers
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Add([FromBody] RecipeBasicDTO mealDTO)
+        public async Task<IActionResult> Add([FromBody] RecipeBasicDTO recipeDTO)
         {
 
-            // instantiate a new meal object to populate with the DTO fields
+            // instantiate a new Recipe object to populate with the DTO fields
             Recipe recipe = new Recipe();
 
-            // check the provided mealDTO matches validation in the model. Return 400 if it doesn't.
+            // check the provided RecipeDTO matches validation in the model. Return 400 if it doesn't.
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            // model must be valid if we've hit this point. Populate the full meal object.
+            // model must be valid if we've hit this point. Populate the full Recipe object.
             recipe.CreatedDate = DateTime.UtcNow;
-            recipe.Name = mealDTO.Name;
-            if (mealDTO.Description != null)
+            recipe.Name = recipeDTO.Name;
+            if (recipeDTO.Description != null)
             {
-                recipe.Description = mealDTO.Description;
+                recipe.Description = recipeDTO.Description;
             }
 
             try
             {
-                // add the meal and sync changes with the actual DB.
+                // add the Recipe and sync changes with the actual DB.
                 _context.Recipes.Add(recipe);
                 await _context.SaveChangesAsync();
                 return CreatedAtAction(nameof(GetById), new { id = recipe.Id }, recipe);
@@ -87,7 +125,7 @@ namespace MealPlannerApi.Controllers
             catch (Exception ex)
             {
                 // log the error. Strip the exception out if production.
-                return StatusCode(StatusCodes.Status500InternalServerError, $"An error occurred while saving the meal: {ex}");
+                return StatusCode(StatusCodes.Status500InternalServerError, $"An error occurred while saving the Recipe: {ex}");
             }
         }
 
@@ -96,14 +134,14 @@ namespace MealPlannerApi.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Delete(int id)
         {
-            Recipe? meal = _context.Recipes.Find(id);
-            if (meal != null)
+            Recipe? recipe = _context.Recipes.Find(id);
+            if (recipe != null)
             {
                 try
                 {
-                    _context.Recipes.Remove(meal);
+                    _context.Recipes.Remove(recipe);
                     await _context.SaveChangesAsync();
-                    return Ok("meal deleted successfully.");
+                    return Ok("Recipe deleted successfully.");
                 }
                 catch (Exception ex)
                 {
@@ -112,7 +150,7 @@ namespace MealPlannerApi.Controllers
             }
             else
             {
-                return NotFound("Meal not found with that id.");
+                return NotFound("Recipe not found with that id.");
             }
         }
 
@@ -122,10 +160,10 @@ namespace MealPlannerApi.Controllers
         {
             try
             {
-                List<Recipe> meals = _context.Recipes.ToList();
-                foreach(var meal in meals)
+                List<Recipe> recipes = _context.Recipes.ToList();
+                foreach(var recipe in recipes)
                 {
-                    _context.Remove(meal);
+                    _context.Remove(recipe);
                 }
 
                 await _context.SaveChangesAsync();

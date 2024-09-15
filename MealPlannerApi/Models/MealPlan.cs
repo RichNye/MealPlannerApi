@@ -10,6 +10,6 @@ namespace MealPlannerApi.Models
         public int Id { get; set; }
 
         [Required]
-        public ICollection<Meal> Meals { get; set; }
+        public ICollection<Meal> Meals { get; set; } = new List<Meal>();
     }
 }

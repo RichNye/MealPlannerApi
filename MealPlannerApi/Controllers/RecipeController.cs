@@ -13,7 +13,6 @@ namespace RecipePlannerApi.Controllers
         private readonly ApplicationDbContext _context;
         private readonly IRecipeService _recipeService;
 
-
         public RecipeController(ApplicationDbContext context, IRecipeService recipeService)
         {
             _context = context;

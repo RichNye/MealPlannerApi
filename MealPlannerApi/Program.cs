@@ -39,10 +39,21 @@ namespace MealPlannerApi
                         throw new Exception("MEALPLANNER_DB environment variable not set.");
                 }
             }
+            else
+            {
+                var connection = Environment.GetEnvironmentVariable("AZURE_SQL_CONNECTIONSTRING");
+                builder.Services.AddDbContext<ApplicationDbContext>(options => 
+                    options.UseSqlServer(connection));
+            }
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
+            {
+                app.UseSwagger();
+                app.UseSwaggerUI();
+            }
+            else
             {
                 app.UseSwagger();
                 app.UseSwaggerUI();

@@ -2,6 +2,7 @@ using MealPlannerApi.Data;
 using MealPlannerApi.Services;
 using MealPlannerApi.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Azure.Monitor.OpenTelemetry.AspNetCore;
 
 namespace MealPlannerApi
 {
@@ -20,9 +21,11 @@ namespace MealPlannerApi
             // Adds the new MealService for business logic for Meals
             builder.Services.AddScoped<IRecipeService, MealService>();
 
+            // OpenTelemetry for Azure
+            builder.Services.AddOpenTelemetry().UseAzureMonitor();
+
             // Configure the database connection
-            
-            if(builder.Environment.IsDevelopment())
+            if (builder.Environment.IsDevelopment())
             {
                 string? environmentDB = Environment.GetEnvironmentVariable("MEALPLANNER_DB");
                 switch(environmentDB)

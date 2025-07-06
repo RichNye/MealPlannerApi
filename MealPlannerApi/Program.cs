@@ -24,7 +24,7 @@ namespace MealPlannerApi
             
             if(builder.Environment.IsDevelopment())
             {
-                string? environmentDB = Environment.GetEnvironmentVariable("MEALPLANNER_DB");
+                string? environmentDB = "Postgres"//Environment.GetEnvironmentVariable("MEALPLANNER_DB");
                 switch(environmentDB)
                 {
                     case "SQLServer":

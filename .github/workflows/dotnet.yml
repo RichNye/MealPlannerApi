@@ -13,6 +13,8 @@ jobs:
   build:
     runs-on: self-hosted
     steps:
+    - name: Clean publish folder
+      run: rm -rf ./publish
     - name: Checkout code
       uses: actions/checkout@v4
     - name: Build

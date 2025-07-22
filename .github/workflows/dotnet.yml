@@ -23,3 +23,12 @@ jobs:
       run: dotnet test --no-build --verbosity normal
     - name: Publish
       run: dotnet publish -c Release --runtime linux-x64 --self-contained true --output ./publish
+  deploy:
+    runs-on: self-hosted
+    needs: build
+    steps:
+    - name: Run Ansible web playbook
+      uses: dawidd6/action-ansible-playbook@v4
+      with:
+        playbook: gitrepos/homelab/ansible/playbooks/setup_web.yaml
+        options: --inventory gitrepos/homelab/ansible/inventory.yaml

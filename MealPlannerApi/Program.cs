@@ -22,7 +22,7 @@ namespace MealPlannerApi
             builder.Services.AddScoped<IRecipeService, MealService>();
 
             // OpenTelemetry for Azure
-            builder.Services.AddOpenTelemetry().UseAzureMonitor();
+            // builder.Services.AddOpenTelemetry().UseAzureMonitor();
 
             // Configure the database connection
             if (builder.Environment.IsDevelopment())

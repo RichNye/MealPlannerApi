@@ -21,32 +21,16 @@ namespace MealPlannerApi
             // Adds the new MealService for business logic for Meals
             builder.Services.AddScoped<IRecipeService, MealService>();
 
-            // OpenTelemetry for Azure
-            // builder.Services.AddOpenTelemetry().UseAzureMonitor();
-
             // Configure the database connection
             if (builder.Environment.IsDevelopment())
             {
-                string? environmentDB = "Postgres"; //Environment.GetEnvironmentVariable("MEALPLANNER_DB");
-                switch(environmentDB)
-                {
-                    case "SQLServer":
-                        builder.Services.AddDbContext<ApplicationDbContext>
-                            (options => options.UseSqlServer(builder.Configuration.GetConnectionString("SqlServerConnection")));
-                        break;
-                    case "Postgres":
-                        builder.Services.AddDbContext<ApplicationDbContext>
-                            (options => options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
-                        break;
-                    case null:
-                        throw new Exception("MEALPLANNER_DB environment variable not set.");
-                }
+                builder.Services.AddDbContext<ApplicationDbContext>
+                (options => options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
             }
             else
             {
-                var connection = Environment.GetEnvironmentVariable("AZURE_SQL_CONNECTIONSTRING");
-                builder.Services.AddDbContext<ApplicationDbContext>(options => 
-                    options.UseSqlServer(connection));
+                builder.Services.AddDbContext<ApplicationDbContext>
+                (options => options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
             }
             var app = builder.Build();
 

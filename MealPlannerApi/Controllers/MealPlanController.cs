@@ -1,11 +1,9 @@
-﻿using Azure.Core;
-using MealPlannerApi.Data;
+﻿using MealPlannerApi.Data;
 using MealPlannerApi.Models;
 using MealPlannerApi.Models.DTOs.MealPlan;
 using MealPlannerApi.Models.DTOs;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Identity.Client;
 
 namespace MealPlannerApi.Controllers
 {

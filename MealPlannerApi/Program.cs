@@ -2,7 +2,6 @@ using MealPlannerApi.Data;
 using MealPlannerApi.Services;
 using MealPlannerApi.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using Azure.Monitor.OpenTelemetry.AspNetCore;
 
 namespace MealPlannerApi
 {

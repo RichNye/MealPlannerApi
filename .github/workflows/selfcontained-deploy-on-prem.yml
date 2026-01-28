@@ -31,4 +31,4 @@ jobs:
       uses: dawidd6/action-ansible-playbook@v4
       with:
         playbook: /home/ubuntu/gitrepos/homelab/ansible/playbooks/setup_web.yaml
-        options: --inventory /home/ubuntu/gitrepos/homelab/ansible/inventory.yaml
+        options: --inventory /home/ubuntu/gitrepos/homelab/ansible/inventory/prod/inventory.yaml

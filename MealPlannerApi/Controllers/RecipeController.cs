@@ -23,6 +23,7 @@ namespace RecipePlannerApi.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> Get()
         {
+            Console.WriteLine($"Caller: {HttpContext.Connection.RemoteIpAddress}");
             List<Recipe> Recipes = _recipeService.GetRandomRecipes(7);
             return Ok(Recipes);
         }

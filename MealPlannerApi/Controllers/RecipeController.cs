@@ -12,18 +12,23 @@ namespace RecipePlannerApi.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly IRecipeService _recipeService;
+        private readonly ILogger<RecipleController> _logger;
 
-        public RecipeController(ApplicationDbContext context, IRecipeService recipeService)
+        public RecipeController(ApplicationDbContext context, IRecipeService recipeService, ILogger<RecipeController> logger)
         {
             _context = context;
             _recipeService = recipeService;
+            _logger = logger
         }
 
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> Get()
         {
-            Console.WriteLine($"Caller: {HttpContext.Connection.RemoteIpAddress}");
+            _logger.LogInformation(
+                "Caller IP: {Ip}",
+                HttpContext.Connection.RemoteIpAddress
+            );
             List<Recipe> Recipes = _recipeService.GetRandomRecipes(7);
             return Ok(Recipes);
         }

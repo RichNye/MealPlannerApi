@@ -32,6 +32,7 @@ namespace MealPlannerApi
                 (options => options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
             }
             var app = builder.Build();
+            app.Logger.LogInformation("App started");
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())

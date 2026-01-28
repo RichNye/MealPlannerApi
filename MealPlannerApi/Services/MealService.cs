@@ -15,7 +15,7 @@ namespace MealPlannerApi.Services
 
         public List<Recipe> GetRandomRecipes(int numberOfRecipes)
         {
-            Console.WriteLine($"Caller: {HttpContext.Connection.RemoteIpAddress}");
+            Console.WriteLine("Service GetRandomRecipes method called.")
             List<Recipe> userRecipes = _context.Recipes.OrderBy(m => Guid.NewGuid()).Take(numberOfRecipes).ToList<Recipe>();
 
             return userRecipes;

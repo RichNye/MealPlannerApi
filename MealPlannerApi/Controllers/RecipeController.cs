@@ -73,6 +73,7 @@ namespace RecipePlannerApi.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> GetById(int id)
         {
+            Console.WriteLine($"Caller: {HttpContext.Connection.RemoteIpAddress}");
             try
             {
                 Recipe? recipe = await _context.Recipes.FindAsync(id);

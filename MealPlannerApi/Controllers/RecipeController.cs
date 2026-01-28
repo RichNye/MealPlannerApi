@@ -12,7 +12,7 @@ namespace RecipePlannerApi.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly IRecipeService _recipeService;
-        private readonly ILogger<RecipleController> _logger;
+        private readonly ILogger<RecipeController> _logger;
 
         public RecipeController(ApplicationDbContext context, IRecipeService recipeService, ILogger<RecipeController> logger)
         {

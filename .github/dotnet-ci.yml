@@ -11,15 +11,6 @@ on:
       - "develop"
 
 jobs:
-  get-current-date:
-    runs-on: self-hosted
-    outputs:
-      RELEASE_DATE: ${{ steps.get-date.outputs.RELEASE_DATE }}
-    steps:
-      - name: Get current date
-        id: get-date
-        run: echo "RELEASE_DATE=$(date +'%Y%m%d%H%M')" >> $GITHUB_OUTPUT
-
   restore:
     runs-on: self-hosted
     steps:
@@ -49,11 +40,10 @@ jobs:
   publish:
     runs-on: self-hosted
     needs:
-      - get-current-date
       - test
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
       - name: Publish application
-        run: dotnet publish -c Release --runtime linux-x64 --self-contained true --output ./publish/release-${{ needs.get-current-date.outputs.RELEASE_DATE }}
+        run: dotnet publish -c Release --runtime linux-x64 --self-contained true --output ./publish/release-$GITHUB_RUN_NUMBER
   

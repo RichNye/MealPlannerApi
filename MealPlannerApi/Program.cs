@@ -30,6 +30,18 @@ namespace MealPlannerApi
             {
                 builder.Services.AddDbContext<ApplicationDbContext>
                 (options => options.UseNpgsql(builder.Configuration.GetConnectionString("DevelopmentConnection")));
+
+                builder.Services.AddCors(options =>
+                {
+                    options.AddPolicy("FrontendPolicy", policy =>
+                    {
+                        policy
+                            .WithOrigins("http://127.0.0.1:5500")
+                            .AllowAnyHeader()
+                            .AllowAnyMethod()
+                            .AllowCredentials();
+                    });
+                });
             }
             else
             {
@@ -49,12 +61,13 @@ namespace MealPlannerApi
             }
             else
             {
-                app.UseSwagger();
-                app.UseSwaggerUI();
             }
 
             //app.UseHttpsRedirection();
-
+            if (app.Environment.IsDevelopment())
+            {
+                app.UseCors("FrontendPolicy");
+            }
             app.UseAuthorization();
 
             app.MapControllers();

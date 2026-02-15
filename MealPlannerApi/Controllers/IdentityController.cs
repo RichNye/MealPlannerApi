@@ -48,7 +48,7 @@ namespace MealPlannerApi.Controllers
             try
             {
                 await _signInManager.SignOutAsync();
-                _logger.LogInformation("User logged out.");
+                _logger.LogInformation(User.Identity?.Name + " logged out.");
                 return Ok();
             }
             catch

@@ -37,6 +37,7 @@ namespace MealPlannerApi
                     {
                         policy
                             .WithOrigins("http://127.0.0.1:5500")
+                            .WithOrigins("http://127.0.0.1:8090")
                             .AllowAnyHeader()
                             .AllowAnyMethod()
                             .AllowCredentials();
@@ -51,6 +52,8 @@ namespace MealPlannerApi
 
             var app = builder.Build();
             app.Logger.LogInformation("App started");
+            app.Logger.LogInformation("Environment: {EnvironmentName}", app.Environment.EnvironmentName);
+            app.Logger.LogInformation("Database Connection String: {ConnectionString}", builder.Configuration.GetConnectionString(app.Environment.IsDevelopment() ? "DevelopmentConnection" : "DefaultConnection"));
             app.MapIdentityApi<IdentityUser>();
 
             // Configure the HTTP request pipeline.

@@ -8,3 +8,4 @@ FROM mcr.microsoft.com/dotnet/aspnet:9.0
 WORKDIR /App
 COPY --from=build /App/out .
 ENTRYPOINT ["dotnet", "MealPlannerApi.dll"]
+EXPOSE 8080

@@ -36,8 +36,7 @@ namespace MealPlannerApi
                     options.AddPolicy("FrontendPolicy", policy =>
                     {
                         policy
-                            .WithOrigins("http://127.0.0.1:5500")
-                            .WithOrigins("http://127.0.0.1:8090")
+                            .WithOrigins("http://localhost:8090")
                             .AllowAnyHeader()
                             .AllowAnyMethod()
                             .AllowCredentials();
@@ -71,6 +70,7 @@ namespace MealPlannerApi
             {
                 app.UseCors("FrontendPolicy");
             }
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapControllers();

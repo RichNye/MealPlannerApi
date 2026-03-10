@@ -1,9 +1,10 @@
-﻿using MealPlannerApi.Models.DTOs;
-using Microsoft.AspNetCore.Mvc;
-using MealPlannerApi.Data;
-using MealPlannerApi.Services.Interfaces;
+﻿using MealPlannerApi.Data;
 using MealPlannerApi.Models;
+using MealPlannerApi.Models.DTOs;
+using MealPlannerApi.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace MealPlannerApi.Controllers
 {
@@ -17,6 +18,17 @@ namespace MealPlannerApi.Controllers
         public MealController(ApplicationDbContext context) 
         { 
             _context= context;
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetByDateRange([FromQuery] DateTime from, [FromQuery] DateTime to)
+        {
+            var meals = await _context.Meals
+                .Include(m => m.Recipe)
+                .Where(m => m.MealDate >= from && m.MealDate <= to.AddDays(1))
+                .OrderBy(m => m.MealDate)
+                .ToListAsync();
+            return Ok(meals);
         }
 
         [HttpPost]

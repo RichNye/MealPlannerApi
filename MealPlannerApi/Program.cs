@@ -31,16 +31,28 @@ namespace MealPlannerApi
                 builder.Services.AddDbContext<ApplicationDbContext>
                 (options => options.UseNpgsql(builder.Configuration.GetConnectionString("DevelopmentConnection")));
 
+                // Allow any origin in dev — SetIsOriginAllowed is required instead of AllowAnyOrigin
+                // because AllowAnyOrigin() and AllowCredentials() cannot be used together.
                 builder.Services.AddCors(options =>
                 {
                     options.AddPolicy("FrontendPolicy", policy =>
                     {
                         policy
-                            .WithOrigins("http://localhost:8090")
+                            .SetIsOriginAllowed(_ => true)
                             .AllowAnyHeader()
                             .AllowAnyMethod()
                             .AllowCredentials();
                     });
+                });
+
+                // In dev, the frontend and API are on different origins, so the browser rejects
+                // SameSite=Lax cookies cross-site. Override to SameSite=None with Secure=false
+                // so cookies are sent across origins over plain HTTP.
+                // Do not use this in production.
+                builder.Services.ConfigureApplicationCookie(options =>
+                {
+                    options.Cookie.SameSite = SameSiteMode.Unspecified;
+                    options.Cookie.SecurePolicy = CookieSecurePolicy.None;
                 });
             }
             else

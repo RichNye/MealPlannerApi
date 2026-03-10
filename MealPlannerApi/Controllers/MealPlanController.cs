@@ -1,14 +1,16 @@
 ﻿using MealPlannerApi.Data;
 using MealPlannerApi.Models;
 using MealPlannerApi.Models.DTOs.MealPlan;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace MealPlannerApi.Controllers
 {
     [Authorize]
+    [ApiController]
     [Route("api/mealplans")]
-    public class MealPlanController : Controller
+    public class MealPlanController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
 
@@ -22,7 +24,8 @@ namespace MealPlannerApi.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Get(int id)
         {
-            MealPlan mealplan = await _context.MealPlans.FindAsync(id);
+            MealPlan mealplan = await _context.MealPlans.Include(mp => mp.Meals).FirstOrDefaultAsync(mp => mp.Id == id);
+
 
             if (mealplan == null)
             {

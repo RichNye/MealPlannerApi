@@ -10,7 +10,7 @@ namespace MealPlannerApi.Controllers
     [Authorize]
     [Route("api/meals")]
     [ApiController]
-    public class MealController : Controller
+    public class MealController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
 
@@ -33,7 +33,7 @@ namespace MealPlannerApi.Controllers
             }
 
             meal.Recipe = await _context.Recipes.FindAsync(mealDTO.RecipeId);
-            if (meal == null)
+            if (meal.Recipe == null)
             {
                 return BadRequest(ModelState);
             }

@@ -1,9 +1,10 @@
-﻿using MealPlannerApi.Models;
-using Microsoft.AspNetCore.Mvc;
-using MealPlannerApi.Data;
-using MealPlannerApi.Services.Interfaces;
+﻿using MealPlannerApi.Data;
+using MealPlannerApi.Models;
 using MealPlannerApi.Models.DTOs;
+using MealPlannerApi.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace RecipePlannerApi.Controllers
 {
@@ -23,16 +24,18 @@ namespace RecipePlannerApi.Controllers
             _logger = logger;
         }
 
+        // return all recipes if no query parameter is provided. Otherwise, return the number of random recipes specified by the query parameter.
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<IActionResult> Get()
+        public async Task<IActionResult> Get(int? recipes)
         {
-            _logger.LogInformation(
-                "Caller IP: {Ip}",
-                HttpContext.Connection.RemoteIpAddress
-            );
-            List<Recipe> Recipes = _recipeService.GetRandomRecipes(7);
-            return Ok(Recipes);
+            _logger.LogInformation("Caller IP: {Ip}", HttpContext.Connection.RemoteIpAddress);
+
+            List<Recipe> recipesList = recipes.HasValue
+                ? _recipeService.GetRandomRecipes(recipes.Value)
+                : await _context.Recipes.ToListAsync();
+
+            return Ok(recipesList);
         }
 
         [HttpPatch("{id}")]
@@ -159,28 +162,6 @@ namespace RecipePlannerApi.Controllers
             {
                 return NotFound("Recipe not found with that id.");
             }
-        }
-
-        [HttpDelete("delete/all")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<IActionResult> DeleteAll()
-        {
-            try
-            {
-                List<Recipe> recipes = _context.Recipes.ToList();
-                foreach(var recipe in recipes)
-                {
-                    _context.Remove(recipe);
-                }
-
-                await _context.SaveChangesAsync();
-
-                return Ok();
-            }
-            catch(Exception ex) 
-            {
-                return StatusCode(500, ex.Message);
-            }            
         }
     }
 }

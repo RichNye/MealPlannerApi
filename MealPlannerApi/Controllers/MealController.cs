@@ -3,9 +3,11 @@ using Microsoft.AspNetCore.Mvc;
 using MealPlannerApi.Data;
 using MealPlannerApi.Services.Interfaces;
 using MealPlannerApi.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace MealPlannerApi.Controllers
 {
+    [Authorize]
     [Route("api/meals")]
     [ApiController]
     public class MealController : Controller

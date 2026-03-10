@@ -23,11 +23,16 @@ namespace MealPlannerApi.Controllers
         [HttpGet]
         public async Task<IActionResult> GetByDateRange([FromQuery] DateTime from, [FromQuery] DateTime to)
         {
+            // Query params arrive as Kind=Unspecified — Npgsql requires Utc for timestamptz
+            var fromUtc = DateTime.SpecifyKind(from, DateTimeKind.Utc);
+            var toUtc = DateTime.SpecifyKind(to.AddDays(1), DateTimeKind.Utc); // exclusive upper bound covers full day
+
             var meals = await _context.Meals
                 .Include(m => m.Recipe)
-                .Where(m => m.MealDate >= from && m.MealDate <= to.AddDays(1))
+                .Where(m => m.MealDate >= fromUtc && m.MealDate < toUtc)
                 .OrderBy(m => m.MealDate)
                 .ToListAsync();
+
             return Ok(meals);
         }
 

@@ -19,13 +19,24 @@ namespace MealPlannerApi.Controllers
             _context = dbContext;
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetAll()
+        {
+            var plans = await _context.MealPlans
+                .Include(mp => mp.Meals).ThenInclude(m => m.Recipe)
+                .OrderByDescending(mp => mp.Id)
+                .ToListAsync();
+            return Ok(plans);
+        }
+
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Get(int id)
         {
-            MealPlan mealplan = await _context.MealPlans.Include(mp => mp.Meals).FirstOrDefaultAsync(mp => mp.Id == id);
-
+            var mealplan = await _context.MealPlans
+                .Include(mp => mp.Meals).ThenInclude(m => m.Recipe)
+                .FirstOrDefaultAsync(mp => mp.Id == id);
 
             if (mealplan == null)
             {
@@ -85,24 +96,25 @@ namespace MealPlannerApi.Controllers
             }
         }
 
+        // delete the meal plan, as well as any meals associated with it.
         [HttpDelete("{id}")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Delete(int id)
         {
-            MealPlan mealPlan = await _context.MealPlans.FindAsync(id);
-
-            if (mealPlan == null)
-            {
+            var exists = await _context.MealPlans.AnyAsync(mp => mp.Id == id);
+            if (!exists)
                 return NotFound($"No meal plan found with id of {id}");
-            }
 
-            else
-            {
-                _context.MealPlans.Remove(mealPlan);
-                await _context.SaveChangesAsync();
-                return Ok("meal plan deleted");
-            }
+            // Single DELETE statement: DELETE FROM "Meals" WHERE "MealPlanId" = @id
+            await _context.Meals
+                .Where(m => m.MealPlanId == id)
+                .ExecuteDeleteAsync();
+
+            // Single DELETE statement: DELETE FROM "MealPlans" WHERE "Id" = @id
+            await _context.MealPlans
+                .Where(mp => mp.Id == id)
+                .ExecuteDeleteAsync();
+
+            return Ok("meal plan deleted");
         }
 
         [HttpPatch("{id}")]

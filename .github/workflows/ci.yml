@@ -2,14 +2,18 @@ name: MealPlannerApi CI
 
 on:
   pull_request:
-    branches: [master, develop]
   push:
-    branches: [master]
+    branches: ["master"]
     tags: ["v*.*.*"]
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 env:
-    dotnet-version: "9.0.x"
+  dotnet-version: "9.0.x"
+  publish-dir: "./publish"
+  compressed-dir: "./compressed"
 
 jobs:
   build:
@@ -30,6 +34,9 @@ jobs:
     - name: Test
       run: dotnet test --no-build --verbosity normal
 
+    - name: Publish
+      run: dotnet publish MealPlannerApi/MealPlannerApi.csproj -c Release --runtime linux-x64
+
   release:
     needs: build      
     runs-on: ubuntu-latest
@@ -39,10 +46,13 @@ jobs:
       - name: Setup .NET 
         uses: actions/setup-dotnet@v6
         with:
-            dotnet-version: ${{ env.dotnet-version }}
+          dotnet-version: ${{ env.dotnet-version }}
       
       - name: Publish
-        run: dotnet publish MealPlannerApi/MealPlannerApi.csproj -c Release --runtime linux-x64 -p:Version=${GITHUB_REF_NAME#v} -o "./publish"
+        run: dotnet publish MealPlannerApi/MealPlannerApi.csproj -c Release --runtime linux-x64 -p:Version=${GITHUB_REF_NAME#v} -o "${{ env.publish-dir }}"
+
+      - name: Compress
+        run: mkdir -p ${{ env.compressed-dir }} && tar -czf ${{ env.compressed-dir }}/${{ github.ref_name }}.tar.gz ${{ env.publish-dir }}
 
       - name: Upload to Cloudflare R2
         uses: ryand56/r2-upload-action@5947cd194791163d9b3083371bd621f53e415959
@@ -51,9 +61,5 @@ jobs:
           r2-access-key-id: ${{ secrets.R2_ACCESS_KEY_ID }}
           r2-secret-access-key: ${{ secrets.R2_SECRET_ACCESS_KEY }}
           r2-bucket: ${{ secrets.R2_BUCKET }}
-          source-dir: ./publish
+          source-dir: ${{ env.compressed-dir }}
           destination-dir: ./releases/${{ github.ref_name }}
-        
-
-  
-          

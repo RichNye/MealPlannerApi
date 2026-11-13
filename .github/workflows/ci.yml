@@ -2,14 +2,20 @@ name: MealPlannerApi CI
 
 on:
     push:
-        branches:
-            - "master"
-            - "develop"
+      branches:
+        - "master"
+        - "develop"
     pull_request:
-        branches:
-            - "master"
-            - "develop"
-
+      branches:
+        - "master"
+        - "develop"
+    workflow_dispatch:
+      inputs:
+        branch:
+          description: 'Branch to deploy'
+          required: true
+          default: 'master'
+        
 env:
     dotnet-version: "9.0.x"
 
@@ -46,7 +52,6 @@ jobs:
       
       - name: Publish application
         run: dotnet publish MealPlannerApi/MealPlannerApi.csproj -c Release --runtime linux-x64 -o "./test-mealplanner-build"
-      
 
       - name: Upload to Cloudflare R2
         uses: ryand56/r2-upload-action@latest

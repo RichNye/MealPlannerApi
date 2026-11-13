@@ -1,0 +1,63 @@
+name: MealPlannerApi CI
+
+on:
+    push:
+        branches:
+            - "master"
+            - "develop"
+    pull_request:
+        branches:
+            - "master"
+            - "develop"
+
+env:
+    dotnet-version: "9.0.x"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v7
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v6
+      with:
+        dotnet-version: ${{ env.dotnet-version }}
+
+    - name: Restore dependencies
+      run: dotnet restore
+
+    - name: Build
+      run: dotnet build --no-restore
+
+    - name: Test
+      run: dotnet test --no-build --verbosity normal
+
+  release:
+    runs-on: ubuntu-latest
+    needs:
+      - build
+    steps:
+      - uses: actions/checkout@v7
+      - name: Setup .NET 
+        uses: actions/setup-dotnet@v6
+        with:
+            dotnet-version: ${{ env.dotnet-version }}
+      
+      - name: Publish application
+        run: dotnet publish MealPlannerApi/MealPlannerApi.csproj -c Release --runtime linux-x64 -o "./test-mealplanner-build"
+      
+
+      - name: Upload to Cloudflare R2
+        uses: ryand56/r2-upload-action@latest
+        with: 
+          r2-account-id: ${{ secrets.R2_ACCOUNT_ID }}
+          r2-access-key-id: ${{ secrets.R2_ACCESS_KEY_ID }}
+          r2-secret-access-key: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          r2-bucket: ${{ secrets.R2_BUCKET }}
+          source-dir: ./test-mealplanner-build
+          destination-dir: ./
+        
+
+  
+          

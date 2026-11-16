@@ -1,9 +1,5 @@
 ﻿using MealPlannerApi.Models;
 using Xunit;
-using NuGet.ContentModel;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace MealPlannerApi.Tests
 {

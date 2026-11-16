@@ -11,7 +11,7 @@ permissions:
   contents: read
 
 env:
-  dotnet-version: "9.0.x"
+  dotnet-version: "10.0.x"
   publish-dir: "./publish"
 
 jobs:
